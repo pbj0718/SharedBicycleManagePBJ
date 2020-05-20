@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.etoak.mapper.BikeMapper">
+    <insert id="addBike" parameterType="bikeInfo">
+		insert into bike_info(
+			bike_id,
+			bike_type,
+			bike_supplier,
+			bike_cate,
+			bike_status
+		) values (
+			#{bikeId},
+			#{bikeType},
+			#{bikeSupplier},
+			#{bikeCate},
+			#{bikeStatus}
+		)
+	</insert>
+
+    <select id="listBike" parameterType="bikeInfoVo" resultType="bikeInfoVo">
+        select
+        GROUP_CONCAT(bike_id) as bikeIds,
+        bike_type as bikeType,
+        bike_supplier as BikeSupplier,
+        bike_cate as bikeCate,
+        count(bike_status)  as count
+        from bike_info
+        <where>
+            bike_status = 1
+            and bike_type like '%${bikeType}%'
+        </where>
+        GROUP BY bike_type
+    </select>
+
+    <select id="listByType" parameterType="bikeInfo" resultType="bikeInfo" >
+		select bike_id as bikeId from bike_info where bike_type = #{bikeType} and bike_status = 1
+	</select>
+
+    <update id="addRent" parameterType="bikeRent">
+		update bike_info set bike_status = 0 where bike_id = #{bikeId}
+	</update>
+
+    <update id="backBike" parameterType="bikeInfo">
+		update bike_info set bike_status = 1 where bike_id = #{bikeId}
+	</update>
+
+    <select id="check" parameterType="string" resultType="bikeInfo" >
+		select * from bike_info where bike_type = #{type}
+	</select>
+
+	<select id="checkRent" parameterType="string" resultType="int">
+		select count(*) from bike_info where bike_type = #{bikeType}
+	</select>
+
+	<delete id="deleteInfo" parameterType="string">
+		delete from bike_info where bike_id = #{bikeId}
+	</delete>
+
+	<delete id="deleteRent" parameterType="string">
+		delete from bike_rent where bike_id = #{bikeId}
+	</delete>
+</mapper>

@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.etoak.mapper.RentMapper">
+	<insert id="addRent" parameterType="bikeRent">
+		insert into bike_rent(
+			id,
+			bike_id,
+			rent_id,
+			name,
+			phone,
+			rent_time,
+			rent_status
+		) values (
+			#{id},
+			#{bikeId},
+			#{rentId},
+			#{name},
+			#{phone},
+			#{rentTime},
+			#{rentStatus}
+		)
+	</insert>
+
+	<select id="listRent" resultType="bikeRentVo">
+		select GROUP_CONCAT(bike_id) as bikeIds,
+				count(bike_id) as count,
+				rent_id as rentId,
+				name,
+				phone,
+				back_time as backTime,
+				rent_time as rentTime,
+				rent_status as rentStatus
+			from bike_rent rent
+			GROUP BY rent_id
+	</select>
+
+	<select id="queryById" parameterType="string" resultType="string">
+		select GROUP_CONCAT(bike_id)
+			from bike_rent rent
+			where rent_id = #{rentId}
+	</select>
+
+	<update id="backBike" parameterType="string">
+		update bike_rent set rent_status = 1,back_time = NOW() where rent_id = #{rentId}
+	</update>
+
+	<delete id="deleteRentInfo" parameterType="string">
+		delete from bike_rent where rent_id = #{rentId}
+	</delete>
+
+</mapper>

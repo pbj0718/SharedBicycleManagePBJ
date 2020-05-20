@@ -1,0 +1,61 @@
+/*
+ Navicat Premium Data Transfer
+
+ Source Server         : Mysql
+ Source Server Type    : MySQL
+ Source Server Version : 50631
+ Source Host           : localhost:3306
+ Source Schema         : sharedbicyclemanagepbj
+
+ Target Server Type    : MySQL
+ Target Server Version : 50631
+ File Encoding         : 65001
+
+ Date: 19/05/2020 18:53:16
+*/
+
+SET NAMES utf8mb4;
+SET FOREIGN_KEY_CHECKS = 0;
+
+-- ----------------------------
+-- Table structure for bike_rent
+-- ----------------------------
+DROP TABLE IF EXISTS `bike_rent`;
+CREATE TABLE `bike_rent`  (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `bike_id` varchar(32) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
+  `rent_id` varchar(32) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
+  `name` varchar(20) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
+  `phone` varchar(20) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
+  `rent_time` datetime(0) NULL DEFAULT NULL,
+  `rent_status` int(11) NULL DEFAULT NULL,
+  `back_time` datetime(0) NULL DEFAULT NULL,
+  PRIMARY KEY (`id`) USING BTREE,
+  INDEX `bike_id`(`bike_id`) USING BTREE,
+  CONSTRAINT `bike_rent_ibfk_1` FOREIGN KEY (`bike_id`) REFERENCES `bike_info` (`bike_id`) ON DELETE RESTRICT ON UPDATE RESTRICT
+) ENGINE = InnoDB AUTO_INCREMENT = 20 CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Compact;
+
+-- ----------------------------
+-- Records of bike_rent
+-- ----------------------------
+INSERT INTO `bike_rent` VALUES (1, '02ccd8102f8944a2b4d587c4bca77e4b', 'BICYCLE202005204247', 'zs', '12312312312', '2020-05-21 16:00:00', 1, '2020-05-19 14:20:14');
+INSERT INTO `bike_rent` VALUES (2, '2d0dc05d70b741319666d4de25bf123d', 'BICYCLE202005204247', 'zs', '12312312312', '2020-05-21 16:00:00', 1, '2020-05-19 14:20:14');
+INSERT INTO `bike_rent` VALUES (3, '03e82d0479604daabe9b1c18e608a831', 'BICYCLE202005207484', 'lisi', '12312545687', '2020-05-21 16:00:00', 1, '2020-05-19 14:21:27');
+INSERT INTO `bike_rent` VALUES (4, '04ade5327dc54eeba99f59fc64618ac0', 'BICYCLE202005207484', 'lisi', '12312545687', '2020-05-21 16:00:00', 1, '2020-05-19 14:21:27');
+INSERT INTO `bike_rent` VALUES (5, '063772cfe36f4ef38e64680ae5ab2f45', 'BICYCLE202005207484', 'lisi', '12312545687', '2020-05-21 16:00:00', 1, '2020-05-19 14:21:27');
+INSERT INTO `bike_rent` VALUES (6, '1f265466b39141258d3b1b6eda6e8ed2', 'BICYCLE202005207484', 'lisi', '12312545687', '2020-05-21 16:00:00', 1, '2020-05-19 14:21:27');
+INSERT INTO `bike_rent` VALUES (7, '04ade5327dc54eeba99f59fc64618ac0', 'BICYCLE202005201340', 'wangwu', '12345688874', '2020-05-21 16:00:00', 0, NULL);
+INSERT INTO `bike_rent` VALUES (8, '063772cfe36f4ef38e64680ae5ab2f45', 'BICYCLE202005201340', 'wangwu', '12345688874', '2020-05-21 16:00:00', 0, NULL);
+INSERT INTO `bike_rent` VALUES (9, '02ccd8102f8944a2b4d587c4bca77e4b', 'BICYCLE202005202889', 'jk', '12312312312', '2020-05-19 16:00:00', 1, '2020-05-19 16:13:59');
+INSERT INTO `bike_rent` VALUES (10, '2d0dc05d70b741319666d4de25bf123d', 'BICYCLE202005202889', 'jk', '12312312312', '2020-05-19 16:00:00', 1, '2020-05-19 16:13:59');
+INSERT INTO `bike_rent` VALUES (11, '58ab99d39cd04a3c82914522817a4e63', 'BICYCLE202005202889', 'jk', '12312312312', '2020-05-19 16:00:00', 1, '2020-05-19 16:13:59');
+INSERT INTO `bike_rent` VALUES (12, 'bbfd8a06edcf4f5bbc6384ad0f12a923', 'BICYCLE202005202889', 'jk', '12312312312', '2020-05-19 16:00:00', 1, '2020-05-19 16:13:59');
+INSERT INTO `bike_rent` VALUES (13, 'c1f2db9dbde04be080a9ce2ac3572ba0', 'BICYCLE202005202889', 'jk', '12312312312', '2020-05-19 16:00:00', 1, '2020-05-19 16:13:59');
+INSERT INTO `bike_rent` VALUES (14, '0b08ffc8f9324288a7de2e49971dfcb5', 'BICYCLE202005202480', '郭某某', '18589658522', '2020-05-19 10:23:47', 1, '2020-05-19 18:25:07');
+INSERT INTO `bike_rent` VALUES (15, '2311af373fad48c3aa5d3fa598773538', 'BICYCLE202005202480', '郭某某', '18589658522', '2020-05-19 10:23:47', 1, '2020-05-19 18:25:07');
+INSERT INTO `bike_rent` VALUES (16, 'bdc285a367194e9f90c67b12ef32a1a0', 'BICYCLE202005201193', '小郭', '13696325874', '2020-05-19 16:00:00', 1, '2020-05-19 18:25:28');
+INSERT INTO `bike_rent` VALUES (17, 'c21c0f0d47444d638991e4343bb908cc', 'BICYCLE202005201193', '小郭', '13696325874', '2020-05-19 16:00:00', 1, '2020-05-19 18:25:28');
+INSERT INTO `bike_rent` VALUES (18, 'c69259b1603940898f9a5df478c84f20', 'BICYCLE202005201193', '小郭', '13696325874', '2020-05-19 16:00:00', 1, '2020-05-19 18:25:28');
+INSERT INTO `bike_rent` VALUES (19, 'e8447e9e90bd479e8cf43d2e1a676010', 'BICYCLE202005201193', '小郭', '13696325874', '2020-05-19 16:00:00', 1, '2020-05-19 18:25:28');
+
+SET FOREIGN_KEY_CHECKS = 1;

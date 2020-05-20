@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport"
+              content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+        <meta http-equiv="X-UA-Compatible" content="ie=edge">
+        <title>租赁信息展示</title>
+        <link rel="stylesheet" th:href="@{/layui/css/layui.css}">
+    </head>
+    <body>
+    <script type="text/html" id="toolBar">
+        <a class="layui-btn" lay-event="rent">还车</a>
+    </script>
+
+    <table lay-even lay-skin="line" lay-size="lg" id="bike" lay-filter="bike">
+    </table>
+
+    <script th:src="@{/layui/layui.js}"></script>
+    <script th:src="@{/js/jquery-1.10.2.js}"></script>
+    <script type="text/html" id="sexTpl">
+        {{#  if(d.rentStatus == 0){ }}
+        <a class="layui-btn" lay-event="rent">还车</a>
+        {{#  } else { }}
+        {{  }}
+        {{#  } }}
+    </script>
+        <script th:inline="javascript">
+            let contextPath = [[${#request.getContextPath()}]];
+
+            function load() {
+                layui.use(['element','layer','form','table'],function () {
+                    let element = layui.element;
+                    let layer = layui.layer;
+                    let form = layui.form;
+                    let table = layui.table;
+
+                    //表格数据及渲染
+                    let listBikeInfo = table.render({
+                        elem:'#bike',
+                        page:true,
+                        url:contextPath + "/rent/listRent",
+                        method:'post',
+                        limit:10,
+                        totalRow:true,
+                        loading:true,
+                        text:{
+                            none:'暂无相关数据'
+                        },
+                        cols:
+                            [
+                                [
+                                    {field:'rentId',title:'租赁编号',width:150,sort:true,align:'center'},
+                                    {field:'bikeIds',title:'单车编号',width:150,sort:true,align:'center'},
+
+                                    {field:'name',title:'租赁人',width:100,sort:true,align:'center'},
+                                    {field:'phone',title:'联系电话',width:150,sort:true,align:'center'},
+                                    {field:'rentTime',title:'租赁时间',width:150,sort:true,align:'center',templet:function (d) {
+                                            return layui.util.toDateString(d.time);
+                                        }},
+                                    {field:'backTime',title:'还车时间',width:150,sort:true,align:'center',templet:function (d) {
+                                            return d.backTime==null?"未还车":layui.util.toDateString(d.time);
+                                        }},
+                                    {field:'rentStatus',title:'租赁状态',width:100,sort:true,align:'center',templet:function (d) {
+                                            return d.rentStatus==0?"租赁中":"已还车";
+                                        }},
+                                    {fixed:'right',title:'操作',width:100,sort:true,align:'center',templet: '#sexTpl'}
+                                ]
+                            ]
+                    });
+
+                    //租赁
+                    table.on("tool(bike)",function (obj) {
+                        console.log(obj);
+                        if (obj.event === 'rent'){
+                            layer.confirm("你确定归还单车吗？",function (index) {
+                                obj.del();
+                                layer.close(index);
+                                $.ajax({
+                                    url:contextPath + '/rent/backBike',
+                                    data:'rentId=' + obj.data.rentId,
+                                    type:'post',
+                                    dataType:'json',
+                                    success:function (data) {
+                                        if (data.flag == "success"){
+                                            load();
+                                            return;
+                                        }else {
+                                            load();
+                                        }
+                                    },
+                                    error:function (err) {
+                                        console.log(err);
+                                    }
+                                });
+                            })
+                        }
+                    });
+                });
+            }
+            load();
+
+        </script>
+    </body>
+</html>

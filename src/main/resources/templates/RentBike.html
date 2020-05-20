@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport"
+              content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+        <meta http-equiv="X-UA-Compatible" content="ie=edge">
+        <title>租车</title>
+        <link rel="stylesheet" th:href="@{/layui/css/layui.css}">
+    </head>
+    <body>
+        <form class="layui-form" action="">
+            <div class="layui-form-item">
+                <label class="layui-form-label">租赁编号</label>
+                <div class="layui-input-block">
+                    <div class="layui-form-mid layui-word-aux">
+                        <input type="text" readonly id="rentId" name="rentId">
+                    </div>
+                </div>
+            </div>
+
+            <div class="layui-form-item">
+                <label class="layui-form-label">姓名</label>
+                <div class="layui-input-block">
+                    <input type="text" name="name" id="name" required  lay-verify="required"
+                           placeholder="请输入姓名" autocomplete="off" class="layui-input">
+                </div>
+            </div>
+
+            <div class="layui-form-item">
+                <label class="layui-form-label">联系电话</label>
+                <div class="layui-input-block">
+                    <input type="text" name="phone" id="phone" required  lay-verify="required|phone"
+                           placeholder="请输入联系电话" autocomplete="off" class="layui-input">
+                </div>
+            </div>
+
+            <div class="layui-form-item">
+                <label class="layui-form-label">租赁时间</label>
+                <div class="layui-input-block">
+                    <input type="text" name="rentTime" id="rentTime" autocomplete="off" lay-verify="required" class="layui-input">
+                </div>
+            </div>
+
+            <table lay-even lay-skin="line" lay-size="lg" id="bike" lay-filter="filter">
+            </table>
+
+            <div class="layui-form-item">
+                <div class="layui-input-block">
+                    <button class="layui-btn" lay-submit lay-filter="*">立即提交</button>
+                    <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+                </div>
+            </div>
+        </form>
+
+        <script th:src="@{/layui/layui.js}"></script>
+        <script th:src="@{/js/jquery-1.10.2.js}"></script>
+        <script th:inline="javascript">
+            let contextPath = [[${#request.getContextPath()}]];
+            //生成后四位随机编码
+            $(function () {
+                let x = 9999;
+                let y = 1000;
+                let rand = parseInt(Math.random()*(x - y + 1) + y);
+                let date = new Date();
+                let year = date.getFullYear();
+                let month = date.getMonth();
+                let day = date.getDate();
+                if (day < 10){
+                    day = 0+day;
+                }
+
+                let code = 'BICYCLE' + year + ((month + 1)<10?"0"+(month + 1):month) + (day + 1) + rand;
+                console.log(code);
+                $("#rentId").attr("value",code);
+
+            });
+
+            function load() {
+                layui.use(['element','layer','form','table','laydate'],function () {
+                    let element = layui.element;
+                    let layer = layui.layer;
+                    let form = layui.form;
+                    let laydate = layui.laydate;
+                    let table = layui.table;
+
+                    //时间选择空间
+                    laydate.render({
+                        elem: '#rentTime',
+                        type: 'datetime',
+                        format: 'yyyy-MM-dd HH:mm:ss',
+                        min:0
+                    });
+
+                    //表格数据及渲染
+                    let listBikeInfo = table.render({
+                        elem:'#bike',
+                        page:true,
+                        url:contextPath + "/rent/listType",
+                        method:'post',
+                        limit:10,
+                        totalRow:true,
+                        loading:true,
+                        text:{
+                            none:'暂无相关数据'
+                        },
+                        cols:
+                            [
+                                [
+                                    {field:'bikeId',type:'checkbox',width:50,sort:true,align:'center'},
+                                    {field:'bikeId',title:'单车编号',width:300,sort:true,align:'center'},
+                                ]
+                            ]
+                    });
+
+                    //复选框时间监听
+                    let ids = [];
+                    table.on('checkbox(filter)', function(obj){
+                        console.log(obj.checked); //当前是否选中状态
+                        console.log(obj.data); //选中行的相关数据
+                        console.log(obj.type);
+                        console.log(table.checkStatus('bike').data);
+
+                        if (obj.checked){
+                            if (obj.type == 'all'){
+                                ids = [];
+                                let info = table.checkStatus('bike').data;
+                                for (let i = 0;i < info.length;i++){
+                                    ids.push(info[i]['bikeId']);
+                                }
+                                console.log(ids);
+                                return;
+                            }
+                            ids.push(obj.data.bikeId);
+                        } else{
+                            if (obj.type == 'all'){
+                                ids = [];
+                                return;
+                            }
+                            ids.pop(obj.data.bikeId);
+                        }
+                        console.log(ids);
+                    });
+
+                    form.on('submit(*)', function(data){
+                        let json = {};
+                        json.rentId = $("#rentId").val();
+                        json.name = $("#name").val();
+                        json.phone = $("#phone").val() ;
+                        json.rentTime = $("#rentTime").val();
+                        json.bikeIds = ids.join(",");
+                        console.log(JSON.stringify(json.bikeIds));
+                        if (json.bikeIds == null){
+                            if(confirm('还未选择单车')){ //只有当点击confirm框的确定时，该层才会关闭
+                                layer.close(index)
+                            }
+                            return false;
+                        }
+
+                        $.ajax({
+                            url:contextPath + '/rent/addRent',
+                            contentType:"application/json",
+                            data:JSON.stringify(json),
+                            dataType:'json',
+                            type:'post',
+                            success:function (data) {
+                                if(data.flag == 'success') {
+                                    layer.open({
+                                        type: 1,
+                                        offset: '120px',
+                                        title: '添加成功',
+                                        area: ['180px', '150px'],
+                                        content: '添加成功',
+                                        btn: '关闭',
+                                        btnAlign: 'r',
+                                        anim: 0
+                                    });
+                                    let index = parent.layer.getFrameIndex(window.name);
+                                    parent.layer.close(index);
+                                    parent.load();
+                                }
+                            }
+                        });
+                        return false;
+                    });
+                });
+            }
+            load();
+
+        </script>
+    </body>
+</html>
